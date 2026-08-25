@@ -12,6 +12,7 @@ import {
 } from 'firebase/auth';
 import {
   getFirestore,
+  initializeFirestore,
   doc,
   getDoc,
   setDoc,
@@ -23,23 +24,57 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { Builder, UserProfile } from '../types';
-
-const firebaseConfig = {
-  projectId: 'hardy-premise-6thv3',
-  appId: '1:223315327391:web:04f0b65c3e81fe34a5e5aa',
-  apiKey: 'AIzaSyDsqR-FZBI8Mbj8H71LMGFrJf-qmiRX2XQ',
-  authDomain: 'hardy-premise-6thv3.firebaseapp.com',
-  storageBucket: 'hardy-premise-6thv3.firebasestorage.app',
-  messagingSenderId: '223315327391',
-};
+import firebaseConfig from '../../firebase-applet-config.json';
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
-const DATABASE_ID = 'ai-studio-matchcrewsync-26e7f742-a2d0-47f2-a3a4-9574fd33079d';
-export const db = getFirestore(app, DATABASE_ID);
+// Initialize Firestore with auto-detect long polling for resilient connection inside iframe sandboxes
+export const db = (() => {
+  try {
+    return initializeFirestore(app, {
+      experimentalAutoDetectLongPolling: true,
+    }, firebaseConfig.firestoreDatabaseId);
+  } catch (e) {
+    return getFirestore(app, firebaseConfig.firestoreDatabaseId);
+  }
+})();
+
+export enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+export interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId?: string | null;
+    email?: string | null;
+    emailVerified?: boolean | null;
+  };
+}
+
+export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
+      emailVerified: auth.currentUser?.emailVerified,
+    },
+    operationType,
+    path,
+  };
+  console.warn('Firestore Operation Notice:', JSON.stringify(errInfo));
+}
 
 // Auth helper functions
 export const signInWithGoogle = async () => {
@@ -82,38 +117,44 @@ export const syncUserProfile = async (
   user: FirebaseUser,
   extraData?: { college?: string; phone?: string }
 ): Promise<UserProfile> => {
-  const userRef = doc(db, 'users', user.uid);
-  const snap = await getDoc(userRef);
+  const fallbackProfile: UserProfile = {
+    uid: user.uid,
+    email: user.email,
+    displayName: user.displayName || user.email?.split('@')[0] || 'Campus Builder',
+    photoURL: user.photoURL,
+    isPro: false,
+    proPlan: null,
+    college: extraData?.college || 'SRM Institute of Science and Technology',
+    phone: extraData?.phone || '',
+  };
 
-  if (!snap.exists()) {
-    const newProfile: UserProfile = {
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName || user.email?.split('@')[0] || 'Campus Builder',
-      photoURL: user.photoURL,
-      isPro: false,
-      proPlan: null,
-      college: extraData?.college || 'SRM Institute of Science and Technology',
-      phone: extraData?.phone || '',
-    };
-    await setDoc(userRef, {
-      ...newProfile,
-      createdAt: new Date().toISOString(),
-    });
-    return newProfile;
-  } else {
-    const data = snap.data();
-    return {
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName || data.displayName || 'Campus Builder',
-      photoURL: user.photoURL || data.photoURL,
-      isPro: !!data.isPro,
-      proPlan: data.proPlan || null,
-      proActivatedAt: data.proActivatedAt,
-      phone: data.phone || '',
-      college: data.college || 'SRM Institute of Science and Technology',
-    };
+  try {
+    const userRef = doc(db, 'users', user.uid);
+    const snap = await getDoc(userRef);
+
+    if (!snap.exists()) {
+      await setDoc(userRef, {
+        ...fallbackProfile,
+        createdAt: new Date().toISOString(),
+      });
+      return fallbackProfile;
+    } else {
+      const data = snap.data();
+      return {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || data.displayName || 'Campus Builder',
+        photoURL: user.photoURL || data.photoURL,
+        isPro: !!data.isPro,
+        proPlan: data.proPlan || null,
+        proActivatedAt: data.proActivatedAt,
+        phone: data.phone || '',
+        college: data.college || 'SRM Institute of Science and Technology',
+      };
+    }
+  } catch (err) {
+    handleFirestoreError(err, OperationType.GET, `users/${user.uid}`);
+    return fallbackProfile;
   }
 };
 
