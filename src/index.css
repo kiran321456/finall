@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    letter-spacing: -0.01em;
+  }
+  
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+}
+
+/* Subtle Glow & Shimmer Effects */
+@keyframes subtle-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.25), 0 0 30px rgba(99, 102, 241, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.45), 0 0 45px rgba(168, 85, 247, 0.2);
+  }
+}
+
+@keyframes pro-amber-glow {
+  0%, 100% {
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 28px rgba(245, 158, 11, 0.6);
+  }
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.glow-btn-pro {
+  animation: pro-amber-glow 3s infinite ease-in-out;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.glow-btn-pro::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 75%
+  );
+  transform: rotate(30deg);
+  animation: shimmer-sweep 4s infinite linear;
+}
+
+.glow-btn-ai {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.glow-btn-ai:hover {
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
+  transform: translateY(-1px);
+}
+
+.glow-floating-bot {
+  animation: subtle-pulse-glow 4s infinite ease-in-out;
+}
+
+/* Background Atmosphere */
+.rich-aura-light {
+  background-color: #ffffff;
+  background-image: 
+    radial-gradient(at 15% 10%, rgba(99, 102, 241, 0.03) 0px, transparent 50%),
+    radial-gradient(at 85% 15%, rgba(245, 158, 11, 0.02) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, rgba(16, 185, 129, 0.02) 0px, transparent 50%);
+}
+
+.rich-aura-dark {
+  background-color: #0b0f19;
+  background-image: 
+    radial-gradient(at 10% 15%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, rgba(245, 158, 11, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 85%, rgba(16, 185, 129, 0.07) 0px, transparent 50%);
+}
+
+/* Crisp Clean Glass Cards */
+.glass-card-clean {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+}
+
+.dark .glass-card-clean {
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0b0f19;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #1f2937;
+  border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
+
+.light ::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+.light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
+

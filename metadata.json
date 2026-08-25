@@ -1,0 +1,6 @@
+{
+  "name": "Match Crew",
+  "description": "AI-powered team synergy engine and campus talent discovery platform for assembling high-impact squads.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

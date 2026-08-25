@@ -1,0 +1,54 @@
+{
+  "entities": {
+    "User": {
+      "collection": "users",
+      "fields": {
+        "email": { "type": "string", "required": true },
+        "displayName": { "type": "string", "required": false },
+        "photoURL": { "type": "string", "required": false },
+        "isPro": { "type": "boolean", "required": true },
+        "proPlan": { "type": "string", "required": false },
+        "proExpiresAt": { "type": "string", "required": false },
+        "createdAt": { "type": "string", "required": false },
+        "phone": { "type": "string", "required": false },
+        "college": { "type": "string", "required": false }
+      }
+    },
+    "Builder": {
+      "collection": "builders",
+      "fields": {
+        "name": { "type": "string", "required": true },
+        "role": { "type": "string", "required": true },
+        "deptYear": { "type": "string", "required": true },
+        "skills": { "type": "array", "required": true },
+        "domains": { "type": "array", "required": true },
+        "matchScore": { "type": "number", "required": true },
+        "availability": { "type": "string", "required": true },
+        "bio": { "type": "string", "required": false },
+        "github": { "type": "string", "required": false },
+        "email": { "type": "string", "required": false },
+        "phone": { "type": "string", "required": false },
+        "whatsapp": { "type": "string", "required": false },
+        "linkedin": { "type": "string", "required": false },
+        "discord": { "type": "string", "required": false },
+        "cgpa": { "type": "string", "required": false },
+        "hackathonsWon": { "type": "number", "required": false },
+        "featuredProject": { "type": "map", "required": false },
+        "strengths": { "type": "array", "required": false },
+        "verified": { "type": "boolean", "required": false },
+        "avatarColor": { "type": "string", "required": false },
+        "initials": { "type": "string", "required": false },
+        "createdBy": { "type": "string", "required": false },
+        "createdAt": { "type": "string", "required": false }
+      }
+    },
+    "UserSquad": {
+      "collection": "squads",
+      "fields": {
+        "userId": { "type": "string", "required": true },
+        "memberIds": { "type": "array", "required": true },
+        "updatedAt": { "type": "string", "required": false }
+      }
+    }
+  }
+}
